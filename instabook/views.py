@@ -69,14 +69,14 @@ class ProfileViewSet(viewsets.ModelViewSet):
         following = self.get_object()
 
         if follower == following:
-            return Response({"detail": "You cannot follow yourself."})
+            return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
         follow, created = Follow.objects.get_or_create(
             follower=follower, following=following
         )
 
         if not created:
-            return Response({"detail": "You are already following this user."})
+            return Response({"detail": "You are already following this user."}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
             {"detail": f"You are now following {following.full_name}."}
@@ -95,10 +95,10 @@ class ProfileViewSet(viewsets.ModelViewSet):
         ).first()
 
         if follower == following:
-            return Response({"detail": "You cannot unfollow yourself."})
+            return Response({"detail": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
         if not follow:
-            return Response({"detail": "You are not following this user."})
+            return Response({"detail": "You are not following this user."}, status=status.HTTP_400_BAD_REQUEST)
 
         follow.delete()
 
@@ -199,7 +199,7 @@ class PostViewSet(viewsets.ModelViewSet):
         like, created = Like.objects.get_or_create(profile=profile, post=post)
 
         if not created:
-            return Response({"detail": "You have already liked this post."})
+            return Response({"detail": "You have already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"detail": f"You are liked {post.name} now."})
 
@@ -214,7 +214,7 @@ class PostViewSet(viewsets.ModelViewSet):
         like = Like.objects.filter(profile=profile, post=post).first()
 
         if not like:
-            return Response({"detail": "You have not liked this post."})
+            return Response({"detail": "You have not liked this post."}, status=status.HTTP_400_BAD_REQUEST)
 
         like.delete()
 

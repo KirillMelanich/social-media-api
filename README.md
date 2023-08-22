@@ -21,14 +21,6 @@ The API allows users to create profiles, follow other users, create and retrieve
     ```shell
     python manage.py migrate
 
-5. Add these apps to `INSTALLED_APPS` and install them corresponding to the `rest_framework` version.
-
-      ```python
-        INSTALLED APPS = [
-      ...,
-      "rest_framework",
-   ]
-   ```
 
 ## Usage
 

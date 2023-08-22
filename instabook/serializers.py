@@ -3,28 +3,6 @@ from rest_framework import serializers
 from instabook.models import Profile, Follow, Post, Like, Comment
 
 
-class ProfileSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(source="user.email", read_only=True)
-    date_joined = serializers.DateTimeField(
-        source="user.date_joined", read_only=True
-    )
-
-    class Meta:
-        model = Profile
-        fields = (
-            "id",
-            "username",
-            "avatar",
-            "date_joined",
-            "first_name",
-            "last_name",
-            "bio",
-            "date_of_birth",
-            "location",
-            "email",
-            "phone",
-        )
-
 
 class FollowRequestSerializer(serializers.ModelSerializer):
     class Meta:
@@ -50,6 +28,33 @@ class FollowingListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = ("following",)
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    following = FollowingListSerializer(many=False, read_only=True)
+    follower = FollowerListSerializer(many=False, read_only=True)
+    email = serializers.EmailField(source="user.email", read_only=True)
+    date_joined = serializers.DateTimeField(
+        source="user.date_joined", read_only=True
+    )
+
+    class Meta:
+        model = Profile
+        fields = (
+            "id",
+            "username",
+            "avatar",
+            "date_joined",
+            "first_name",
+            "last_name",
+            "bio",
+            "date_of_birth",
+            "location",
+            "email",
+            "phone",
+            "following",
+            "follower"
+        )
 
 
 class PostSerializer(serializers.ModelSerializer):

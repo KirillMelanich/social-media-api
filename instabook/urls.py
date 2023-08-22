@@ -9,6 +9,4 @@ router = routers.DefaultRouter()
 router.register("profiles", ProfileViewSet)
 router.register("posts", PostViewSet)
 
-urlpatterns = [
-    path("", include(router.urls)),
-]
+urlpatterns = router.urls

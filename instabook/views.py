@@ -45,12 +45,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         """Deletes the specified user profile if the authenticated user is the owner"""
-        if instance.user == self.request.user:
-            instance.delete()
-        else:
-            raise PermissionDenied(
-                "You do not have permission to delete this profile."
-            )
+        instance.delete(user=self.request.user)
 
     @extend_schema(
         parameters=[
@@ -68,7 +63,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     @action(
         detail=True, methods=["POST"], serializer_class=FollowRequestSerializer
     )
-    def follow(self, request, pk=None):
+    def follow(self, request):
         """Creates a request to subscribe to the user profile with the specified pk"""
         follower = self.request.user.profile
         following = self.get_object()
@@ -90,7 +85,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     @action(
         detail=True, methods=["POST"], serializer_class=FollowRequestSerializer
     )
-    def unfollow(self, request, pk=None):
+    def unfollow(self, request):
         """Cancels the subscription request to the user profile with the specified pk"""
         follower = self.request.user.profile
         following = self.get_object()
@@ -112,14 +107,14 @@ class ProfileViewSet(viewsets.ModelViewSet):
         )
 
     @action(detail=True, methods=["GET"])
-    def followers(self, request, pk=None):
+    def followers(self, request):
         """Returns a list of all users who have subscribed to the user profile with the specified pk"""
         profile = self.get_object()
         serializer = FollowerListSerializer(profile.followers.all(), many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=["GET"])
-    def following(self, request, pk=None):
+    def following(self, request):
         """Returns a list of all user profiles that the user with the specified pk is subscribed to"""
         profile = self.get_object()
         serializer = FollowingListSerializer(
@@ -128,7 +123,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=True, methods=["GET"])
-    def posts(self, request, pk=None):
+    def posts(self, request):
         """Returns a list of all posts created by the user with the specified pk"""
         profile = self.get_object()
         posts = Post.objects.filter(author=profile)
@@ -136,7 +131,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=True, methods=["GET"])
-    def following_posts(self, request, pk=None):
+    def following_posts(self, request):
         """Returns a list of all posts created by users that the user with the specified pk is subscribed to"""
         profile = self.get_object()
         followings = profile.followers.all()
@@ -145,7 +140,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=True, methods=["GET"])
-    def liked_posts(self, request, pk=None):
+    def liked_posts(self, request):
         """Returns a list of all posts that were liked by the user with the specified pk"""
         profile = self.get_object()
         likes = profile.likes.all()

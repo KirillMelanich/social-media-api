@@ -11,3 +11,16 @@ class IsAdminOrIfAuthenticatedReadOnly(BasePermission):
             )
             or (request.user and request.user.is_staff)
         )
+
+
+class IsProfileOwnerOrReadOnly(BasePermission):
+    """
+    Custom permission to only allow owners of a profile to delete it.
+    """
+
+    def has_permission(self, request, view):
+
+        if request.method in SAFE_METHODS:
+            return True
+
+        return request.user == view.get_object().user

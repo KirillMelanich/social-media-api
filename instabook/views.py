@@ -233,13 +233,7 @@ class PostViewSet(viewsets.ModelViewSet):
         """Adds a comment to a post"""
         post = self.get_object()
         serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(profile=request.user.profile, post=post)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+        serializer.save(profile=request.user.profile, post=post)
 
     @action(
         detail=True,
@@ -253,17 +247,7 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = CommentSerializer(
             comment, data=request.data, partial=True
         )
-
-        if comment.profile != self.request.user.profile:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+        serializer.save()
 
     @action(
         detail=True,

@@ -3,7 +3,6 @@ from rest_framework import serializers
 from instabook.models import Profile, Follow, Post, Like, Comment
 
 
-
 class FollowRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow

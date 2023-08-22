@@ -2,7 +2,6 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -152,7 +151,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.select_related("author")
     serializer_class = PostSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsProfileOwnerOrReadOnly)
 
     def get_queryset(self):
         """Returns a queryset of Post objects, filtered by name if provided"""

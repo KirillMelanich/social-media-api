@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from instabook.models import Profile, Follow, Post, Like, Comment
+from instabook.permisssions import IsProfileOwnerOrReadOnly
 from instabook.serializers import (
     ProfileSerializer,
     FollowingListSerializer,
@@ -23,7 +24,7 @@ from instabook.serializers import (
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.select_related("user")
     serializer_class = ProfileSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
         """Returns a list of all user profiles that match the specified username parameter, if provided"""
@@ -151,7 +152,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.select_related("author")
     serializer_class = PostSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
         """Returns a queryset of Post objects, filtered by name if provided"""
@@ -169,22 +170,11 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         """Update a specific post, if the requesting user is the author"""
-        post = self.get_object()
-        if post.author == self.request.user.profile:
-            serializer.save(author=self.request.user.profile)
-        else:
-            raise PermissionDenied(
-                "You do not have permission to update this post."
-            )
+        serializer.save(post=self.request.user)
 
     def perform_destroy(self, instance):
         """Deletes the post if the current user is the author"""
-        if instance.author == self.request.user.profile:
-            instance.delete()
-        else:
-            raise PermissionDenied(
-                "You do not have permission to delete this post."
-            )
+        instance.save(post=self.request.user)
 
     @extend_schema(
         parameters=[
